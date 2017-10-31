@@ -1,0 +1,13 @@
+TODO 
+
+Finalize problem statement
+Select 2 algorithms 
+Parallel Prim, Different heuristics
+Parallel Boruvka
+Write a report for problem statement
+
+New Approach
+Test on different heuristics
+Sparse Graphs
+Dense Graphs
+Compare performance of Bader and Rohit Setia
