@@ -8,7 +8,7 @@ int main(int argc, char const * argv[]) {
   Graph graph;
   graph.readGraph(file_name);
   graph.printGraph();
-  Boruvka bk(graph, max_threads);
+  Boruvka bk(graph, 300, max_threads);
   vector<Edge> MST_edges = bk.run();
 
   printf("FINAL MST\n");

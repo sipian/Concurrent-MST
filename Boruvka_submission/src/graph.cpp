@@ -11,6 +11,8 @@ int Graph::readGraph(string file_name) {
     return 0;
   }
   fin >> noOfVertices;
+  fin >> noOfEdges;
+
   adjList = vector<vector<Edge> > (noOfVertices);
   int edges = 0;
   
@@ -23,8 +25,7 @@ int Graph::readGraph(string file_name) {
     adjList[v].push_back(Edge2);
     edges += 2;
   }
-
-  noOfEdges = edges;
+  noOfEdges *= 2;
   fin.close();
   return 1; 
 }

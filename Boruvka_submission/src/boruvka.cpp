@@ -32,10 +32,10 @@ tuple<int, int> Boruvka::getLoopBounds(int threadID, int starting_index, int fin
  * Constructor for Boruvka
  * 
 */
-Boruvka::Boruvka(Graph &graph, int no_of_threads): hardwareConcurrency(no_of_threads) {
+Boruvka::Boruvka(Graph &graph, int min_array_size, int no_of_threads): hardwareConcurrency(no_of_threads) {
   this->graph = graph;
   noOfVertices = graph.noOfVertices;
-  minimumSizeOfArrayForSequentialOperation = 500;
+  minimumSizeOfArrayForSequentialOperation = min_array_size;
   noOfTheadsCreated = 0;
 
   root = vector<int> (noOfVertices);
@@ -81,7 +81,9 @@ vector<Edge> Boruvka::run() {
   return inEdges[0];
 }
 
-//returns a vector of the component id-s of the components present currently in group i.e. input in the current iteration
+/*
+ * returns a vector of the component id-s of the components present currently in group i.e. input in the current iteration
+*/
 vector<int> Boruvka::getKeyset() {
   vector<int> keys;
   for (auto it = groups.begin(); it != groups.end(); it++) {
@@ -98,7 +100,9 @@ vector<int> Boruvka::getNewKeyset() {
   return keys;
 }
 
-// concurrent implementation of finding minEdge on subset of vertices 
+/*
+ * concurrent implementation of finding minEdge on subset of vertices 
+*/
 void Boruvka::findMinEdges() {
 
   std::vector<thread> th(hardwareConcurrency);
@@ -112,6 +116,9 @@ void Boruvka::findMinEdges() {
   }
 }
 
+/*
+ * sequential function that will be called by spawning threads to find minimum element in a partition of array
+*/
 Edge Boruvka::minElementSequential(vector<Edge> &array, int start, int end) {
   auto begin_iterator = array.begin();
   auto end_iterator = array.begin();
@@ -120,6 +127,9 @@ Edge Boruvka::minElementSequential(vector<Edge> &array, int start, int end) {
   return *min_element(begin_iterator, end_iterator, Boruvka::edgeCompare);
 }
 
+/*
+ * parallel implementation of finding the minimum element
+*/
 Edge Boruvka::minElementGraph(vector<Edge> &array) {
   // if size is small enough no need to parallelize
   // Better if done sequentially
@@ -130,7 +140,7 @@ Edge Boruvka::minElementGraph(vector<Edge> &array) {
     // Parallel implementation of finding the minimum element
     int sz = array.size(), rl;
     int limit = sz / minimumSizeOfArrayForSequentialOperation;
-    std::vector<std::future<Edge> > th(limit);
+    std::vector<std::future<Edge> > th(limit);  // vector to hold the future of each spawned thread
     for (int i = 0; i < limit; i++) {
 
       if (i == limit - 1) {
@@ -139,12 +149,14 @@ Edge Boruvka::minElementGraph(vector<Edge> &array) {
       else {
         rl = (i + 1) * minimumSizeOfArrayForSequentialOperation;
       }
+      // calling the thread asynchronously to find minimum in an array partition
       th[i] = std::async(std::launch::async, &Boruvka::minElementSequential, this, ref(array), i * minimumSizeOfArrayForSequentialOperation, rl);
     }
 
     noOfTheadsCreated += limit;
-    Edge result(-1, -1, INT_MAX);
+    Edge result(-1, -1, INT_MAX);   //dummy value to hold the final answer
 
+    // loop to wait for future value of the spawned threads
     for (int i = 0; i < limit; i++) {
 
       Edge tmp = th[i].get();
@@ -164,7 +176,10 @@ void Boruvka::findMinEdgesPerThread (int threadID) {
   }
 }
 
-// sequential implementation
+/* 
+ * sequential implementation of finding the connected components among the edges found in thhe first step
+ * using union find data structure  
+*/
 void Boruvka::setNewGroups() {
   for (int i = 0; i < keyset.size(); i++) {
     int group_id = keyset[i];
@@ -173,7 +188,7 @@ void Boruvka::setNewGroups() {
     int root1 = getRootOfSubTree(minEdge.u);
     int root2 = getRootOfSubTree(minEdge.v);
 
-    // if both trees are of the same component
+    // if both trees are of the same component , no need to merge
     if (root1 == root2) {
       continue;
     }
@@ -187,18 +202,19 @@ void Boruvka::setNewGroups() {
     }
     mergeSubTrees(root1, root2);
   }
-  // for (int i = 0; i < noOfVertices; ++i)
-  // {
-  //   printf("%d - %d\n", i,  root[i]);
-  // }
-  // exit(0);
 }
 
+/*
+ * mering 2 groups by adding the nodes in child group to parent group 
+*/
 void Boruvka::mergeNodeGroups(int root1, int root2) {
   newGroups[root1].insert(newGroups[root1].end(), newGroups[root2].begin(), newGroups[root2].end());
   newGroups.erase(root2);
 }
 
+/*
+ * mering in edges for the 2 groups merged above
+*/
 void Boruvka::mergeNodeEdges(int root1, int root2, Edge &picked) {
   inEdges[root1].insert(inEdges[root1].end(), inEdges[root2].begin(), inEdges[root2].end());
   // adding the MST edge in inEdges
@@ -206,7 +222,9 @@ void Boruvka::mergeNodeEdges(int root1, int root2, Edge &picked) {
   inEdges.erase(root2);
 }
 
-// union find data structure find algorithm
+/* 
+ * union find data structure find
+*/
 int Boruvka::getRootOfSubTree(int i) {
   while (root[i] != i) {
     i = root[i];
@@ -214,7 +232,9 @@ int Boruvka::getRootOfSubTree(int i) {
   return i;
 }
 
-// union find data structure union algorithm
+/* 
+ *union find data structure union
+*/
 void Boruvka::mergeSubTrees(int i, int j) {
   // performing path compression for smaller trees
   if (i < j)
@@ -222,13 +242,16 @@ void Boruvka::mergeSubTrees(int i, int j) {
   else
     root[i] = j;
 }
-
+/*
+ * parallel function to merge the components found in step 2 
+*/
 void Boruvka::setNewOutEdges() {
 
   std::vector<thread> th(hardwareConcurrency);
-  // get the merged components of the merged groups
+  // get the connected components of the merged groups
   keyset = getNewKeyset();
   for (int i = 0; i < hardwareConcurrency; i++) {
+    // spawn a thread calling setNewOutEdgesPerThread for the mereg operation 
     th[i] = thread(&Boruvka::setNewOutEdgesPerThread, this, i);
   }
   noOfTheadsCreated += hardwareConcurrency;
@@ -240,7 +263,9 @@ void Boruvka::setNewOutEdges() {
   outEdges = newOutEdges;
   groups = newGroups;
 }
-
+/*
+ * Sequential algorithm which merges the nodes edges physically
+*/
 void Boruvka::setNewOutEdgesPerThread(int threadID) {
   auto loopBounds = getLoopBounds(threadID, 0, keyset.size());
   for (int i = get<0>(loopBounds); i < get<1>(loopBounds); i++) {
@@ -259,13 +284,17 @@ void Boruvka::setNewOutEdgesPerThread(int threadID) {
       outEdges[it].clear();  //edges not required as they have already been merged into a new edges
     }
 
+    // remove the duplicated deleted edges 
     for (auto it : inEdges[newcomponentID]) {
       deleteDuplicateOfEdgeInList(newOutEdges[newcomponentID], it);
     }
+    // remove any cycles formed in the process
     deleteAllCycles(newcomponentID);
   }
 }
-//deletes all duplicates of edge 'e' in the vector 'v'
+/*
+ * deletes all duplicates of edge 'e' in the vector 'v'
+*/
 void Boruvka::deleteDuplicateOfEdgeInList(vector<Edge> &list, Edge &e) {
   auto it = list.begin();
   while (it != list.end()) {
@@ -278,7 +307,9 @@ void Boruvka::deleteDuplicateOfEdgeInList(vector<Edge> &list, Edge &e) {
   }
 }
 
-//iterates through all edges of component 'id' and deletes all edges that have two endpoints in the same component
+/*
+ * iterates through all edges of component 'id' and deletes all edges that have two endpoints in the same component
+*/
 void Boruvka::deleteAllCycles(int id) {
   vector<Edge> *v = &newOutEdges[id];
   vector<int> subs = groups[id];

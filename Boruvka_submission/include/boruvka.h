@@ -49,7 +49,7 @@ class Boruvka {
   void deleteAllCycles(int id);
 public:
   atomic_int noOfTheadsCreated;
-  Boruvka(Graph &graph, int no_of_threads);
+  Boruvka(Graph &graph, int min_array_size, int no_of_threads);
   vector<Edge> run();
 
 };
