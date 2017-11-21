@@ -7,17 +7,17 @@
 
 
 using namespace std;
-ifstream input ("input.txt");
+ifstream input ("complete.txt");
 
 void concurrentAdd(int v, int u, int weight, int ID);
 
 // This class represents a directed graph using adjacency list representation
 class Graph
 {
-    int V;    
+    int V;
+
+public:    
     list< pair<int, int> > *adj;
- 
-public:
 
     vector<int> key;
     vector<int> parent;
@@ -41,36 +41,38 @@ public:
     
 
     // function to find minimum spanning tree
-    void primMST(int V)
-    {
+    void primMST(int V) {
+    
+
         pq.insert(0,0,0);
         key[0] = 0;
 
         int pqsize = V;
 
         /* Looping till priority queue becomes empty */
-        while (pqsize!=0)
-        {
+        while (pqsize!=0) {
             int u = pq.removeMin().second;
-            
-     
-            inMST[u] = true;  // Include vertex in MST
-     
-            // 'i' is used to get all adjacent vertices of a vertex
-            list< pair<int, int> >::iterator i;
-            
+            inMST[u] = true;  // Include vertex in MST            
             // m = number of threads
             int m = adj[u].size();
             thread *thr = new std::thread[m];
             int id=0;
-            for (i = adj[u].begin(); i != adj[u].end(); ++i) {
-                
+            list< pair<int, int> >::iterator i;
+            printf("%d----------------------------\n", adj[u].size());
+            for ( i = adj[u].begin(); i != adj[u].end(); ++i) {
+
                 int v = (*i).first;
                 int weight = (*i).second;
+                // concurrentAdd(v,u,weight,0);
                 thr[id] = std::thread(concurrentAdd,v,u,weight,id+1);
                 id++;
                 
             }
+
+            for(int j=0;j<m;j++)
+                thr[j].join(); 
+
+
             pqsize--;
 
 
@@ -87,6 +89,7 @@ public:
 Graph g;
 
 void concurrentAdd(int v, int u, int weight, int ID) {
+
 
     if (g.inMST[v] == false && g.key[v] > weight) {
         g.key[v] = weight;
@@ -126,6 +129,17 @@ int main()
         input>>vertex1>>vertex2>>weight;
         g.addEdge(vertex1,vertex2,weight);
 
+    }
+
+    cout << "\nGraph Description==>\n\tNo. Of vertices : "<<V<<"\n\tNo. Of edges : "<<E<<"\n";
+    for (int u = 0; u < V; ++u) {
+        cout << "\t" << u << ": ";
+        for(auto i = g.adj[u].begin(); i != g.adj[u].end(); ++i) {
+            int v = (*i).first;
+            int w = (*i).second;
+            cout << "(" << v << "," << w << ") --> ";
+        }
+        cout<< "END" << endl;
     }
  
 

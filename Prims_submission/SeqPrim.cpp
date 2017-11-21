@@ -10,7 +10,7 @@ using namespace chrono;
  
 // iPair ==>  Integer Pair
 typedef pair<int, int> iPair;
-ifstream input ("input.txt");
+ifstream input ("complete.txt");
 
 priority_queue< iPair, vector <iPair> , greater<iPair> > pq;
 vector<int> key;
@@ -29,9 +29,11 @@ class Graph
  
     // In a weighted graph, we need to store vertex
     // and weight pair for every edge
-    list< pair<int, int> > *adj;
+    
  
 public:
+
+    list< pair<int, int> > *adj;
     Graph(int V);  // Constructor
  
     // function to add an edge to graph
@@ -124,6 +126,16 @@ int main()
         input>>vertex1>>vertex2>>weight;
         g.addEdge(vertex1,vertex2,weight);
 
+    }
+    cout << "\nGraph Description==>\n\tNo. Of vertices : "<<V<<"\n\tNo. Of edges : "<<E<<"\n";
+    for (int u = 0; u < V; ++u) {
+        cout << "\t" << u << ": ";
+        for(auto i = g.adj[u].begin(); i != g.adj[u].end(); ++i) {
+            int v = (*i).first;
+            int w = (*i).second;
+            cout << "(" << v << "," << w << ") --> ";
+        }
+        cout<< "END" << endl;
     }
   
     auto start = std::chrono::high_resolution_clock::now();

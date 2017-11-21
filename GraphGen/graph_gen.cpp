@@ -147,7 +147,7 @@ void print(vector<int> s) {
 
 int main() {
 
-	int N = 10;
+	int N = 8;
 	vector<Edge*> g = generateGraph(N);
 	ofstream fout;
 	fout.open("test_case.txt");
