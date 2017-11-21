@@ -10,7 +10,7 @@ using namespace chrono;
  
 // iPair ==>  Integer Pair
 typedef pair<int, int> iPair;
-ifstream input ("complete.txt");
+ifstream input ("input.txt");
 
 priority_queue< iPair, vector <iPair> , greater<iPair> > pq;
 vector<int> key;
@@ -96,10 +96,11 @@ void Graph::primMST()
         }
     }
 
-    printf("MST:\nV1 - V2\n");
     // Print edges of MST using parent array
-    for (int i = 1; i < V; ++i)
-        printf("%d - %d\n", parent[i], i);
+    printf("FINAL MST\n");
+    for (int i = 1; i < V; ++i) {
+        cout << "(" << i << "," << parent[i] << ")" << endl;
+    }
 }
  
 int main()
