@@ -1,3 +1,6 @@
+// Source : http://www.geeksforgeeks.org/prims-algorithm-using-priority_queue-stl/
+
+
 #include <iostream>
 #include <vector>
 #include <algorithm>
