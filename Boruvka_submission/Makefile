@@ -24,7 +24,7 @@ clean:
 	rm MST	asdf
 
 test:
-	./MST < input
+	./MST $(input)
 
 all: MST test
 

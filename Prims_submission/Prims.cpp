@@ -63,6 +63,8 @@ public:
             int m = adj[u].size();
             thread *thr = new std::thread[m];
             int id=0;
+                cout << "IN" << endl;
+    exit(0);
             for (i = adj[u].begin(); i != adj[u].end(); ++i) {
                 
                 int v = (*i).first;

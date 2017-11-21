@@ -6,12 +6,14 @@ using namespace std;
 int main(int argc, char const * argv[]) {
   string file_name;
   const int max_threads = thread::hardware_concurrency();
-  cin >> file_name;
+  cout << "Enter test file name :: ";
+  // cin >> file_name;
+  file_name = string(argv[1]);
   Graph graph;
   cout << "inputting graph" << endl;
   graph.readGraph(file_name);
   cout << "inputed graph" << endl;
-  // graph.printGraph();
+  //graph.printGraph();
   cout << "boruvka constructor" << endl;
   Boruvka bk(graph, 500, max_threads);
   struct timeval  tv1, tv2;
@@ -30,8 +32,9 @@ int main(int argc, char const * argv[]) {
   }
 
   int nTh = bk.noOfTheadsCreated;
-  cout << "Grand Total No Of threads spawned :: " << nTh << endl;
+  cout << "Grand Total No. Of threads spawned during program execution :: " << nTh << endl;
   cout << "Time Taken To Run Parallel Boruvka :: " << timeTaken << " seconds " << endl;
 
   return 0;
 }
+
