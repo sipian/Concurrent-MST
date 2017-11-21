@@ -129,7 +129,10 @@ int main()
     }
  
 
+    auto start = std::chrono::high_resolution_clock::now();
     g.primMST(V);
+    auto totaltime = std::chrono::high_resolution_clock::now() - start;
+    printf("Execution time for parallel Prim's is %lld microseconds\n", totaltime);
 
     return 0;
 }
