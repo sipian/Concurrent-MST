@@ -7,6 +7,8 @@
 
 
 using namespace std;
+FineGrainedHeap pq;
+
 ifstream input ("complete.txt");
 
 void concurrentAdd(int v, int u, int weight, int ID);
@@ -51,6 +53,7 @@ public:
 
         /* Looping till priority queue becomes empty */
         while (pqsize!=0) {
+
             int u = pq.removeMin().second;
             inMST[u] = true;  // Include vertex in MST            
             // m = number of threads
@@ -62,7 +65,9 @@ public:
             for ( i = adj[u].begin(); i != adj[u].end(); ++i) {
 
                 int v = (*i).first;
+            printf("%d----------------------------\n", adj[u].size());
                 int weight = (*i).second;
+                printf("%d %d\n",v,weight );
                 // concurrentAdd(v,u,weight,0);
                 thr[id] = std::thread(concurrentAdd,v,u,weight,id+1);
                 id++;
