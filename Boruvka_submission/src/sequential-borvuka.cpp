@@ -191,7 +191,7 @@ int main(int argc, char* argv[])
     graph->edge[w].weight = w;
   }
   fin.close();
-
+  cout << "hhelo" << endl;
   auto start = std::chrono::high_resolution_clock::now();
   boruvkaMST(graph);
   auto totaltime = std::chrono::high_resolution_clock::now() - start;
@@ -199,7 +199,3 @@ int main(int argc, char* argv[])
 
   return 0;
 }
-
-
-parallel sequential
-1.19191 seconds
