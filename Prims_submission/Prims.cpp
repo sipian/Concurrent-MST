@@ -6,7 +6,10 @@
 #define INF INT_MAX
 
 using namespace std;
-ifstream input ("input.txt");
+
+FineGrainedHeap pq;
+
+ifstream input ("complete.txt");
 
 void concurrentAdd(int v, int u, int weight, int ID);
 
@@ -45,6 +48,8 @@ public:
 
         /* Looping till priority queue becomes empty */
         while (pqsize != 0) {
+
+
             int u = pq.removeMin().second;
             inMST[u] = true;  // Include vertex in MST
             // m = number of threads
@@ -61,6 +66,7 @@ public:
                 int v = (*i).first;
                 int weight = (*i).second;
                 cout << "IN " << v << " " << weight << endl;
+                printf("%d %d\n",v,weight );
                 // concurrentAdd(v,u,weight,0);
                 thr[id] = std::thread(concurrentAdd, v, u, weight, id + 1);
                 id++;
