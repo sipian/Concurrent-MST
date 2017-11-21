@@ -1,5 +1,4 @@
 #include "boruvka.h"
-#include <sys/time.h>
 
 using namespace std;
 
@@ -16,24 +15,22 @@ int main(int argc, char const * argv[]) {
   //graph.printGraph();
   cout << "boruvka constructor" << endl;
   Boruvka bk(graph, 500, max_threads);
-  struct timeval  tv1, tv2;
 
   cout << "calling boruvka" << endl;
-  gettimeofday(&tv1, NULL);
+
+  auto start = std::chrono::high_resolution_clock::now();
   vector<Edge> MST_edges = bk.run();
-  gettimeofday(&tv2, NULL);
+  auto totaltime = std::chrono::high_resolution_clock::now() - start;
   cout << "done boruvka" << endl;
 
-  double timeTaken = (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 + (double) (tv2.tv_sec - tv1.tv_sec);       //get CPU time taken in seconds
- 
   printf("FINAL MST\n");
   for (int i = 0; i < MST_edges.size(); i++) {
-    cout << "(" << MST_edges[i].u << "," << MST_edges[i].v << "," << MST_edges[i].w<< ")" << endl;
+    cout << "(" << MST_edges[i].u << "," << MST_edges[i].v << "," << MST_edges[i].w << ")" << endl;
   }
 
   int nTh = bk.noOfTheadsCreated;
   cout << "Grand Total No. Of threads spawned during program execution :: " << nTh << endl;
-  cout << "Time Taken To Run Parallel Boruvka :: " << timeTaken << " seconds " << endl;
+  printf(" Time Taken To Run Parallel Boruvka :: %lld microseconds\n", totaltime);
 
   return 0;
 }

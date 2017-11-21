@@ -68,19 +68,19 @@ vector<Edge> Boruvka::run() {
     newOutEdges = vector<vector<Edge> > (noOfVertices);
     newGroups = groups;
     keyset = getKeyset();
-    cout << "start minedges\n" << endl;
+    // cout << "start minedges\n" << endl;
     findMinEdges();   // parallelly find the minimum edge
-    cout << "start setNewGroups\n" << endl;
+    // cout << "start setNewGroups\n" << endl;
     //exit(0);
     setNewGroups();   // parallelly compute the connected components
-    cout << " ********** finsihed setNewGroups\n" << endl;
+    // cout << " ********** finsihed setNewGroups\n" << endl;
 
     if (newGroups.size() == 1) {
       // MST has been made
       break;
     }
     setNewOutEdges();   //merge the connected components
-    cout << "finsihed setNewOutEdges\n" << endl;
+    // cout << "finsihed setNewOutEdges\n" << endl;
   }
   return inEdges[0];
 }
