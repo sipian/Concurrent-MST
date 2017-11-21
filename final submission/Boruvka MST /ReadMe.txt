@@ -3,7 +3,7 @@ To run the program execute
  make input=testcases/geeks_for_geeks_prim_MST_example.txt
 
 where in input you specify the input file path where the graph representation is given.
-Graph should be undirected and connected.
+Graph should be UNDIRECTED and CONNECTED.
 
 Graph Representation in the file
  

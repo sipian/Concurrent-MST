@@ -1,9 +1,8 @@
-To run the program execute
+To run the program give the graph input in input.txt and execute
 
-g++ -pthread -std=c++11 Prims.cpp
+    make
 
-and give the graph input in input.txt
-Graph should be undirected and connected.
+Graph should be UNDIRECTED and CONNECTED.
 
 Graph Representation in the file
  
